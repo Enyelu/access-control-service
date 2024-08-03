@@ -2,6 +2,7 @@ using access_control.api.Extensions;
 using access_control.api.Middlewares;
 using access_control.infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.ConfigureApplicationServices(builder.Configuration);
 builder.Services.ConfigureApplicationDatabase(builder.Configuration);
 
+//Configure logger
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .WriteTo.Seq(context.Configuration["Serilog:WriteTo:0:Args:serverUrl"]));
+
 var app = builder.Build();
+Log.Information("Application is starting - Access control");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
