@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\access-control.domain\access-control.domain.csproj" />
+    <ProjectReference Include="..\access-control.infrastructure\access-control.infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
