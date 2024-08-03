@@ -22,6 +22,12 @@ namespace access_control.api.Middlewares
             using (var responseBodyStream = new MemoryStream())
             {
                 context.Response.Body = responseBodyStream;
+                var endpoint = context.GetEndpoint();
+                var routeEndpoint = endpoint as RouteEndpoint;
+                var actionName = routeEndpoint?.RoutePattern.RequiredValues["action"]?.ToString();
+                var statusCode = context.Response.StatusCode;
+                var userId = context.User?.Identity?.Name ?? "Anonymous";
+
 
                 try
                 {
@@ -30,21 +36,21 @@ namespace access_control.api.Middlewares
 
                     // Capture the response
                     var responseBody = await ReadResponseBody(context.Response);
-
+                    
                     // Log the request and response
                     var eventLog = new EventLog
                     {
-                        CreatedBy = context.User?.Identity?.Name ?? "Anonymous",
-                        Action = "Request",
+                        CreatedBy = userId,
+                        Action = actionName,
                         Changes = JsonConvert.SerializeObject(new
                         {
                             RequestMethod = context.Request.Method,
                             RequestQueryString = context.Request.QueryString.ToString(),
-                            RequestHeaders = context.Request.Headers.ToDictionary(h => h.Key, h => h.Value.ToString()),
                             RequestBody = await ReadRequestBody(context.Request),
-                            ResponseStatusCode = context.Response.StatusCode,
-                            ResponseBody = responseBody
+                            ResponseStatusCode = statusCode,
+                            ResponseBody = responseBody,
                         }),
+                        IsSuccessful = statusCode == 200 || statusCode == 201,
                         CreatedAt = DateTime.UtcNow
                     };
 
@@ -60,9 +66,10 @@ namespace access_control.api.Middlewares
                     // Handle the exception
                     var eventLog = new EventLog
                     {
-                        Action = "System",
-                        CreatedBy = "Error",
+                        Action = actionName,
+                        CreatedBy = userId,
                         Changes = JsonConvert.SerializeObject(new { ErrorMessage = ex.Message, ErrorStackTrace = ex.StackTrace }),
+                        IsSuccessful = false,
                         CreatedAt = DateTime.UtcNow
                     };
                     dbContext.EventLogs.Add(eventLog);

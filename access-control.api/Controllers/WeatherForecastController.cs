@@ -18,8 +18,8 @@ namespace access_control.api.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet("Info")]
+        public IEnumerable<WeatherForecast> WeatherForcastMethodName()
         {
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
