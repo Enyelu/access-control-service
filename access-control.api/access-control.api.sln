@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "access-control.api", "access-control.api.csproj", "{0C07155B-EE64-462A-A9EE-BA255C9C20DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C07155B-EE64-462A-A9EE-BA255C9C20DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C07155B-EE64-462A-A9EE-BA255C9C20DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C07155B-EE64-462A-A9EE-BA255C9C20DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C07155B-EE64-462A-A9EE-BA255C9C20DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C27C7082-3FDE-4B7B-8154-954532D8B83F}
+	EndGlobalSection
+EndGlobal
