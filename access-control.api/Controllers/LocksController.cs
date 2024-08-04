@@ -52,9 +52,17 @@ namespace access_control.api.Controllers
 
         [HttpGet("view-complaint")]
         [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> ViewComplaint([FromBody] string request)
+        public async Task<IActionResult> ViewComplaint(string request)
         {
             var response = await Mediator.Send(request);
+            return Ok(response);
+        }
+
+        [HttpGet("{tenantId}")]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<IActionResult> FetchLockByTenantId([FromRoute] string tenantId)
+        {
+            var response = await Mediator.Send(tenantId);
             return Ok(response);
         }
     }

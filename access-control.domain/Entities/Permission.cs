@@ -4,5 +4,6 @@
     {
         public string RoleId { get; set; }
         public string LockId { get; set; }
+        public string TenantId { get; set; }
     }
 }
