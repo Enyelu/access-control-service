@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using access_control.core.Commands.Lock;
+using access_control.core.DataTransferObjects;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace access_control.api.Controllers
@@ -14,9 +16,15 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateLock([FromQuery] string email)
+        public async Task<IActionResult> CreateLock([FromBody]CreateLockDto request)
         {
-            var response = await Mediator.Send(email);
+            var response = await Mediator.Send(new HandleCreateLock.Command
+            {
+                Name = request.Name,
+                UserId = GetUserId(),
+                SerialNumber = request.SerialNumber
+
+            });
             return Ok(response);
         }
 

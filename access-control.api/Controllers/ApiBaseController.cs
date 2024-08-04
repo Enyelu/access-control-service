@@ -9,5 +9,13 @@ namespace access_control.api.Controllers
     {
         private IMediator _mediator;
         protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
+
+        protected string GetUserId()
+        {
+            var userId = User?.Identity?.Name;
+            if (string.IsNullOrWhiteSpace(userId))
+                throw new Exception("UserId is required");
+            return userId;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using access_control.core.Commands.Permission;
+﻿using access_control.core.Commands.Lock;
+using access_control.core.Commands.Permission;
 using access_control.core.DataTransferObjects;
 using access_control.core.Queries.Event;
 using access_control.core.Queries.Permission;
@@ -19,6 +20,9 @@ namespace access_control.core.Profiles
             CreateMap<HandleDeletePermission.Command, DeletePermissionDto>().ReverseMap();
             CreateMap<HandlePermissionByTenantId.Result, Permission>().ReverseMap();
             CreateMap<HandleFetchEvents.Result, EventLog>().ReverseMap();
+            CreateMap<HandleCreateLock.Command, Lock>()
+                .ForMember(x => x.CreatedBy, options => options.MapFrom((m, _1, _2, ctx) => (string)ctx.Items["CreatedBy"]))
+                .ReverseMap();
         }
     }
 }
