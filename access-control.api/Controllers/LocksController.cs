@@ -97,7 +97,11 @@ namespace access_control.api.Controllers
         [ProducesResponseType(typeof(string), 200)]
         public async Task<IActionResult> FetchAssignedLocks()
         {
-            var response = await Mediator.Send("");
+            var response = await Mediator.Send(new HandleFetchAssignedLocks.Query
+            {
+                RoleId = GetRequiredValues().roleId,
+                TenantId = GetRequiredValues().tenantId
+            });
             return Ok(response);
         }
     }
