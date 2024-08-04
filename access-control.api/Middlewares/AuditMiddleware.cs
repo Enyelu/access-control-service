@@ -1,7 +1,7 @@
-﻿using access_control.core.Shared;
-using access_control.domain.Entities;
+﻿using access_control.domain.Entities;
 using access_control.infrastructure;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Text;
 
 namespace access_control.api.Middlewares
@@ -35,7 +35,9 @@ namespace access_control.api.Middlewares
 
                     // Capture the response
                     var responseBody = await ReadResponseBody(context.Response);
-                    var statusCode = context.Response.StatusCode;
+                    var serviceResponse = GetProcessStatusCode(responseBody);
+                    var serviceStatusCode = serviceResponse.statusCode > 0 ? serviceResponse.statusCode : 000;
+                    var serviceResponseMessage = serviceResponse.Message;
 
                     // Log the request and response
                     var eventLog = new EventLog
@@ -44,13 +46,14 @@ namespace access_control.api.Middlewares
                         Action = actionName,
                         Changes = JsonConvert.SerializeObject(new
                         {
+                            Message = serviceResponseMessage,
                             RequestMethod = context.Request.Method,
                             RequestQueryString = context.Request.QueryString.ToString(),
                             RequestBody = await ReadRequestBody(context.Request),
-                            ResponseStatusCode = statusCode,
+                            ResponseStatusCode = serviceStatusCode,
                             ResponseBody = responseBody,
                         }),
-                        IsSuccessful = statusCode == 200 || statusCode == 201,
+                        IsSuccessful = serviceStatusCode == 200 || serviceStatusCode == 201,
                         CreatedAt = DateTime.UtcNow
                     };
 
@@ -99,6 +102,21 @@ namespace access_control.api.Middlewares
             string responseBody = await new StreamReader(response.Body).ReadToEndAsync();
             response.Body.Seek(0, SeekOrigin.Begin);
             return responseBody;
+        }
+
+        private static (int statusCode, string Message) GetProcessStatusCode(string response)
+        {
+            try
+            {
+                JObject json = JObject.Parse(response);
+                var statusCode = (int)json["statusCode"];
+                var message = (string)json["message"];
+                return (statusCode, message);
+            }
+            catch (Exception ex)
+            {
+                return default;
+            }
         }
     }
 }
