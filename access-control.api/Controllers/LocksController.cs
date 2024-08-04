@@ -21,7 +21,7 @@ namespace access_control.api.Controllers
             var response = await Mediator.Send(new HandleCreateLock.Command
             {
                 Name = request.Name,
-                UserId = GetUserId(),
+                UserId = GetRequiredValues().userId,
                 SerialNumber = request.SerialNumber
 
             });
@@ -29,9 +29,14 @@ namespace access_control.api.Controllers
         }
 
         [HttpPatch("allocate-lock")]
-        public async Task<IActionResult> AllocateLock([FromBody]string request)
+        public async Task<IActionResult> AllocateLock([FromHeader] Guid lockId)
         {
-            var response = await Mediator.Send(request);
+            var response = await Mediator.Send(new HandleAllocateLock.Command
+            {
+                LockId = lockId,
+                UserId = GetRequiredValues().userId,
+                TenantId = GetRequiredValues().tenantId
+            });
             return Ok(response);
         }
 
