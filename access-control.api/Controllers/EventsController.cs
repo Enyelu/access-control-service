@@ -14,7 +14,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> LockEvent([FromQuery] string request)
+        public async Task<IActionResult> FetchEvents([FromQuery] string request)
         {
             var response = await Mediator.Send(new object());
             return Ok(response);
