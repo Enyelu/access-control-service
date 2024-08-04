@@ -41,17 +41,27 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost("open")]
-        public async Task<IActionResult> OpenLock([FromBody] string request)
+        public async Task<IActionResult> OpenLock([FromHeader]Guid lockId)
         {
-            var response = await Mediator.Send(request);
+            var response = await Mediator.Send(new HandleOpenLock.Command
+            {
+                LockId = lockId,
+                RoleId = GetRequiredValues().roleId,
+                TenantId = GetRequiredValues().tenantId
+            });
             return Ok(response);
         }
 
         [HttpPost("close")]
         [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> CloseLock([FromBody] string request)
+        public async Task<IActionResult> CloseLock([FromHeader]Guid lockId)
         {
-            var response = await Mediator.Send(request);
+            var response = await Mediator.Send(new HandleCloseLock.Command
+            {
+                LockId = lockId,
+                RoleId = GetRequiredValues().roleId,
+                TenantId = GetRequiredValues().tenantId
+            });
             return Ok(response);
         }
 
