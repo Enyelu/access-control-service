@@ -13,8 +13,8 @@ namespace access_control.api.Controllers
         protected string GetUserId()
         {
             var userId = User?.Identity?.Name;
-            if (string.IsNullOrWhiteSpace(userId))
-                throw new Exception("UserId is required");
+            /*if (string.IsNullOrWhiteSpace(userId))
+                throw new Exception("UserId is required");*/
             return userId;
         }
     }
