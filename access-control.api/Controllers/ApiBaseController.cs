@@ -10,12 +10,13 @@ namespace access_control.api.Controllers
         private IMediator _mediator;
         protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
 
-        protected string GetUserId()
+        protected (string userId, string tenantId) GetRequiredValues()
         {
             var userId = User?.Identity?.Name;
+            var tenantId = User?.FindFirst("TenantId")?.ToString();
             /*if (string.IsNullOrWhiteSpace(userId))
                 throw new Exception("UserId is required");*/
-            return userId;
+            return (userId, tenantId);
         }
     }
 }
