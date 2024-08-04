@@ -1,5 +1,6 @@
 using access_control.api.Extensions;
 using access_control.api.Middlewares;
+using access_control.core;
 using access_control.infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -14,6 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureApplicationServices(builder.Configuration);
 builder.Services.ConfigureApplicationDatabase(builder.Configuration);
+builder.Services.AddApplicationCore();
 
 //Configure logger
 builder.Host.UseSerilog((context, services, configuration) => configuration
