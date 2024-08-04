@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using access_control.core.Commands.Permission;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace access_control.api.Controllers
@@ -14,14 +15,21 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePermission([FromQuery] string request)
+        public async Task<IActionResult> CreatePermission([FromBody] HandleCreatePermission.Command request)
         {
-            var response = await Mediator.Send(new object());
+            var response = await Mediator.Send(request);
             return Ok(response);
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeletePermission([FromBody] string request)
+        {
+            var response = await Mediator.Send(new object());
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PermissionByTenantId([FromBody] string request)
         {
             var response = await Mediator.Send(new object());
             return Ok(response);

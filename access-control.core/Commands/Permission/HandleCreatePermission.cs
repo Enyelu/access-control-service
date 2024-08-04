@@ -2,7 +2,10 @@
 using access_control.infrastructure;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using EntityModels = access_control.domain.Entities;
 
 namespace access_control.core.Commands.Permission
 {
@@ -11,14 +14,15 @@ namespace access_control.core.Commands.Permission
         public class Command : IRequest<GenericResponse<string>>
         {
             public Guid UserId { get; set; }
+            public Guid TenantId { get; set; }
             public List<CommandExtention> Instructions { get; set; }
             
         }
 
         public class CommandExtention
         {
-            public string RoleId { get; set; }
-            public string LockId { get; set; }
+            public Guid RoleId { get; set; }
+            public Guid LockId { get; set; }
         }
         public class Handler : IRequestHandler<Command, GenericResponse<string>>
         {
@@ -35,10 +39,36 @@ namespace access_control.core.Commands.Permission
             }
             public async Task<GenericResponse<string>> Handle(Command request, CancellationToken cancellationToken)
             {
-                _logger.LogError($"");
+                _logger.LogError($"Attempting to create permission with instructions {JsonConvert.SerializeObject(request.Instructions)} by {request.UserId} at {DateTime.UtcNow}");
+
+                var RoleIds = request.Instructions.Select(x => x.RoleId.ToString() ).ToList();
+                var LockIds = request.Instructions.Select(x => x.LockId.ToString()).ToList();
+
+                var existingPermissions = await _dbContext.Permissions.Where(x => 
+                                    LockIds.Contains(x.LockId) && 
+                                    RoleIds.Contains(x.RoleId) && 
+                                    x.TenantId == request.TenantId.ToString()).ToListAsync();
+
+                var newPermissions = request.Instructions
+                                    .Where(x => !existingPermissions.Any(ep => 
+                                    ep.LockId == x.LockId.ToString() && 
+                                    ep.RoleId == x.RoleId.ToString() && 
+                                    ep.TenantId == request.TenantId.ToString()))
+                                    .ToList();
+
+                if(newPermissions == null || !newPermissions.Any())
+                    return GenericResponse<string>.Fail("Specified permission(s) mapping alreay exist", 400);
 
 
-                return GenericResponse<string>.Success("Success", "Permission deleted created successfully");
+                var permissions = _mapper.Map<List<EntityModels.Permission>>(newPermissions, options =>
+                {
+                    options.Items["TenantId"] = request.TenantId.ToString();
+                    options.Items["CreatedBy"] = request.UserId.ToString();
+                });
+                await _dbContext.Permissions.AddRangeAsync(permissions);
+                _dbContext.SaveChanges();
+
+               return GenericResponse<string>.Success("Success", "Permission(s) created successfully");
             }
         }
     }
