@@ -1,5 +1,6 @@
 ﻿using access_control.core.Commands.Lock;
 using access_control.core.DataTransferObjects;
+using access_control.core.Queries.Lock;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -81,11 +82,22 @@ namespace access_control.api.Controllers
             return Ok(response);
         }
 
-        [HttpGet("{tenantId}")]
+        [HttpGet("allocated")]
         [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> FetchLockByTenantId([FromRoute] string tenantId)
+        public async Task<IActionResult> FetchAllocatedLocks()
         {
-            var response = await Mediator.Send(tenantId);
+            var response = await Mediator.Send(new HandleFetchAllocatedLocks.Query
+            {
+                TenantId = GetRequiredValues().tenantId
+            });
+            return Ok(response);
+        }
+
+        [HttpGet("assigned")]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<IActionResult> FetchAssignedLocks()
+        {
+            var response = await Mediator.Send("");
             return Ok(response);
         }
     }

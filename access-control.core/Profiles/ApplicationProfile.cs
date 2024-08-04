@@ -2,6 +2,7 @@
 using access_control.core.Commands.Permission;
 using access_control.core.DataTransferObjects;
 using access_control.core.Queries.Event;
+using access_control.core.Queries.Lock;
 using access_control.core.Queries.Permission;
 using access_control.domain.Entities;
 using AutoMapper;
@@ -23,6 +24,8 @@ namespace access_control.core.Profiles
             CreateMap<HandleCreateLock.Command, Lock>()
                 .ForMember(x => x.CreatedBy, options => options.MapFrom((m, _1, _2, ctx) => (string)ctx.Items["CreatedBy"]))
                 .ReverseMap();
+
+            CreateMap<HandleFetchAllocatedLocks.Result, Lock>().ReverseMap();
         }
     }
 }
