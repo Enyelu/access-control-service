@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using access_control.core.Queries.Event;
+using access_control.domain.Enums;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace access_control.api.Controllers
@@ -14,9 +16,18 @@ namespace access_control.api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> FetchEvents([FromQuery] string request)
+        public async Task<IActionResult> FetchEvents([FromHeader]Guid tenantId, [FromQuery]DateTime start, [FromQuery]DateTime end, 
+            [FromQuery]EventEnum eventType = EventEnum.Generic, int pageSize = 20, int pageNumber = 1)
         {
-            var response = await Mediator.Send(new object());
+            var response = await Mediator.Send(new HandleFetchEvents.Query 
+            {
+                End = end,
+                Start = start,
+                PageSize = pageSize,
+                PageNumber = pageNumber,
+                EventType = eventType,
+                TenantId = tenantId
+            });
             return Ok(response);
         }
     }

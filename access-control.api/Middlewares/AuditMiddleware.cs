@@ -27,6 +27,7 @@ namespace access_control.api.Middlewares
                 var routeEndpoint = endpoint as RouteEndpoint;
                 var actionName = routeEndpoint?.RoutePattern.RequiredValues["action"]?.ToString();
                 var userId = context.User?.Identity?.Name ?? "Anonymous";
+                var tenantId = context.User?.FindFirst("TenantId")?.ToString() ?? "Anonymous";
 
                 try
                 {
@@ -42,6 +43,7 @@ namespace access_control.api.Middlewares
                     // Log the request and response
                     var eventLog = new EventLog
                     {
+                        TenantId = tenantId,
                         CreatedBy = userId,
                         Action = actionName,
                         Changes = JsonConvert.SerializeObject(new
@@ -69,6 +71,7 @@ namespace access_control.api.Middlewares
                     // Handle the exception
                     var eventLog = new EventLog
                     {
+                        TenantId = tenantId,
                         Action = actionName,
                         CreatedBy = userId,
                         Changes = JsonConvert.SerializeObject(new { ErrorMessage = ex.Message, ErrorStackTrace = ex.StackTrace }),

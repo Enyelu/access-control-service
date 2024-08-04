@@ -1,5 +1,6 @@
 ﻿using access_control.core.Commands.Permission;
 using access_control.core.DataTransferObjects;
+using access_control.core.Queries.Event;
 using access_control.core.Queries.Permission;
 using access_control.domain.Entities;
 using AutoMapper;
@@ -17,6 +18,7 @@ namespace access_control.core.Profiles
 
             CreateMap<HandleDeletePermission.Command, DeletePermissionDto>().ReverseMap();
             CreateMap<HandlePermissionByTenantId.Result, Permission>().ReverseMap();
+            CreateMap<HandleFetchEvents.Result, EventLog>().ReverseMap();
         }
     }
 }
