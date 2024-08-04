@@ -1,5 +1,6 @@
 ﻿using access_control.core.Commands.Permission;
 using access_control.core.DataTransferObjects;
+using access_control.core.Queries.Permission;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,9 +32,17 @@ namespace access_control.api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> PermissionByTenantId([FromBody] string request)
+        public async Task<IActionResult> PermissionByTenantId([FromHeader] Guid tenantId, [FromQuery] DateTime start,
+            [FromQuery]DateTime end, [FromQuery]int PageSize = 20, [FromQuery]int PageNumber = 1)
         {
-            var response = await Mediator.Send(new object());
+            var response = await Mediator.Send(new HandlePermissionByTenantId.Query 
+            { 
+                TenantId = tenantId,
+                Start = start,
+                End = end,
+                PageNumber = PageNumber,
+                PageSize = PageSize
+            });
             return Ok(response);
         }
     }

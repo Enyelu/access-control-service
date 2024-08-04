@@ -36,7 +36,7 @@ namespace access_control.core.Commands.Permission
                 var permission = await _dbContext.Permissions.FirstOrDefaultAsync(x => 
                 x.Id == request.Id.ToString() && 
                 x.LockId == request.LockId.ToString() &&
-                x.TenantId == request.TenantId.ToString());
+                x.TenantId == request.TenantId.ToString(), cancellationToken);
 
                 if (permission == null)
                     return GenericResponse<string>.Fail("Permission does not exist", 404);

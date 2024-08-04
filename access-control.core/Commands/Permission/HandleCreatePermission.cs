@@ -45,14 +45,14 @@ namespace access_control.core.Commands.Permission
                 var LockIds = request.Instructions.Select(x => x.LockId.ToString()).ToList();
                 var tenantId = request.TenantId.ToString();
 
-                var fraudCheck = await _dbContext.Permissions.Where(x => LockIds.Contains(x.LockId) && x.TenantId != tenantId).ToListAsync();
+                var fraudCheck = await _dbContext.Permissions.Where(x => LockIds.Contains(x.LockId) && x.TenantId != tenantId).ToListAsync(cancellationToken);
                 if(fraudCheck.Any())
                     return GenericResponse<string>.Fail("Unauthorized", 401);
 
                 var existingPermissions = await _dbContext.Permissions.Where(x => 
                                     LockIds.Contains(x.LockId) && 
                                     RoleIds.Contains(x.RoleId) && 
-                                    x.TenantId == tenantId).ToListAsync();
+                                    x.TenantId == tenantId).ToListAsync(cancellationToken);
 
                 var newPermissions = request.Instructions
                                     .Where(x => !existingPermissions.Any(ep => 
@@ -70,7 +70,7 @@ namespace access_control.core.Commands.Permission
                     options.Items["TenantId"] = tenantId;
                     options.Items["CreatedBy"] = request.UserId.ToString();
                 });
-                await _dbContext.Permissions.AddRangeAsync(permissions);
+                await _dbContext.Permissions.AddRangeAsync(permissions, cancellationToken);
                 _dbContext.SaveChanges();
 
                 _logger.LogError($"Create permission with instructions {JsonConvert.SerializeObject(request.Instructions)} by {request.UserId} at {DateTime.UtcNow} successfully");
