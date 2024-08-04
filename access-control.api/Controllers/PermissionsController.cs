@@ -1,4 +1,5 @@
 ﻿using access_control.core.Commands.Permission;
+using access_control.core.DataTransferObjects;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,9 +23,10 @@ namespace access_control.api.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeletePermission([FromBody] string request)
+        public async Task<IActionResult> DeletePermission([FromBody] DeletePermissionDto request)
         {
-            var response = await Mediator.Send(new object());
+            var mappedRequest = _mapper.Map<HandleDeletePermission.Command>(request);
+            var response = await Mediator.Send(mappedRequest);
             return Ok(response);
         }
 

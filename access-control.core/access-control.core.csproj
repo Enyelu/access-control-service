@@ -21,8 +21,4 @@
     <ProjectReference Include="..\access-control.infrastructure\access-control.infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DataTransferObjects\" />
-  </ItemGroup>
-
 </Project>

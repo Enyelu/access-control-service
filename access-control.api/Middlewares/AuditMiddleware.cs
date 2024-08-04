@@ -1,4 +1,5 @@
-﻿using access_control.domain.Entities;
+﻿using access_control.core.Shared;
+using access_control.domain.Entities;
 using access_control.infrastructure;
 using Newtonsoft.Json;
 using System.Text;
@@ -25,9 +26,7 @@ namespace access_control.api.Middlewares
                 var endpoint = context.GetEndpoint();
                 var routeEndpoint = endpoint as RouteEndpoint;
                 var actionName = routeEndpoint?.RoutePattern.RequiredValues["action"]?.ToString();
-                var statusCode = context.Response.StatusCode;
                 var userId = context.User?.Identity?.Name ?? "Anonymous";
-
 
                 try
                 {
@@ -36,7 +35,8 @@ namespace access_control.api.Middlewares
 
                     // Capture the response
                     var responseBody = await ReadResponseBody(context.Response);
-                    
+                    var statusCode = context.Response.StatusCode;
+
                     // Log the request and response
                     var eventLog = new EventLog
                     {

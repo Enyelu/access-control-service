@@ -43,17 +43,22 @@ namespace access_control.core.Commands.Permission
 
                 var RoleIds = request.Instructions.Select(x => x.RoleId.ToString() ).ToList();
                 var LockIds = request.Instructions.Select(x => x.LockId.ToString()).ToList();
+                var tenantId = request.TenantId.ToString();
+
+                var fraudCheck = await _dbContext.Permissions.Where(x => LockIds.Contains(x.LockId) && x.TenantId != tenantId).ToListAsync();
+                if(fraudCheck.Any())
+                    return GenericResponse<string>.Fail("Unauthorized", 401);
 
                 var existingPermissions = await _dbContext.Permissions.Where(x => 
                                     LockIds.Contains(x.LockId) && 
                                     RoleIds.Contains(x.RoleId) && 
-                                    x.TenantId == request.TenantId.ToString()).ToListAsync();
+                                    x.TenantId == tenantId).ToListAsync();
 
                 var newPermissions = request.Instructions
                                     .Where(x => !existingPermissions.Any(ep => 
                                     ep.LockId == x.LockId.ToString() && 
                                     ep.RoleId == x.RoleId.ToString() && 
-                                    ep.TenantId == request.TenantId.ToString()))
+                                    ep.TenantId == tenantId))
                                     .ToList();
 
                 if(newPermissions == null || !newPermissions.Any())
@@ -62,13 +67,14 @@ namespace access_control.core.Commands.Permission
 
                 var permissions = _mapper.Map<List<EntityModels.Permission>>(newPermissions, options =>
                 {
-                    options.Items["TenantId"] = request.TenantId.ToString();
+                    options.Items["TenantId"] = tenantId;
                     options.Items["CreatedBy"] = request.UserId.ToString();
                 });
                 await _dbContext.Permissions.AddRangeAsync(permissions);
                 _dbContext.SaveChanges();
 
-               return GenericResponse<string>.Success("Success", "Permission(s) created successfully");
+                _logger.LogError($"Create permission with instructions {JsonConvert.SerializeObject(request.Instructions)} by {request.UserId} at {DateTime.UtcNow} successfully");
+                return GenericResponse<string>.Success("Success", "Permission(s) created successfully");
             }
         }
     }
