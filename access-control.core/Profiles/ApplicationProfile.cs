@@ -26,6 +26,13 @@ namespace access_control.core.Profiles
                 .ReverseMap();
 
             CreateMap<HandleFetchAllocatedLocks.Result, Lock>().ReverseMap();
+            CreateMap<HandleRaiseComplaint.Command, Complaint>()
+                .ForMember(x => x.CreatedBy, options => options.MapFrom((m, _1, _2, ctx) => (string)ctx.Items["CreatedBy"]))
+                .ReverseMap();
+            CreateMap<HandleRaiseComplaint.Command, RaiseComplaintDto>().ReverseMap();
+
+
+            CreateMap<HandleViewComplaint.Result, Complaint>().ReverseMap();
         }
     }
 }
