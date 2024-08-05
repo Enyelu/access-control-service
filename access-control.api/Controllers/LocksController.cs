@@ -59,7 +59,6 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost("close")]
-        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> CloseLock([FromHeader]Guid lockId)
         {
@@ -73,7 +72,6 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost("complaint")]
-        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> RaiseComplaint([FromBody] RaiseComplaintDto request)
         {
