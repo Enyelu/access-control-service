@@ -1,7 +1,8 @@
 ﻿using access_control.core.Commands.Lock;
 using access_control.core.DataTransferObjects;
+using access_control.core.Queries.Event;
 using access_control.core.Queries.Lock;
-using access_control.domain.Enums;
+using access_control.core.Shared;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,6 +19,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> CreateLock([FromBody]CreateLockDto request)
         {
             var response = await Mediator.Send(new HandleCreateLock.Command
@@ -31,6 +33,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpPatch("allocate-lock")]
+        [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> AllocateLock([FromHeader] Guid lockId)
         {
             var response = await Mediator.Send(new HandleAllocateLock.Command
@@ -43,6 +46,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost("open")]
+        [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> OpenLock([FromHeader]Guid lockId)
         {
             var response = await Mediator.Send(new HandleOpenLock.Command
@@ -56,6 +60,7 @@ namespace access_control.api.Controllers
 
         [HttpPost("close")]
         [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> CloseLock([FromHeader]Guid lockId)
         {
             var response = await Mediator.Send(new HandleCloseLock.Command
@@ -69,6 +74,7 @@ namespace access_control.api.Controllers
 
         [HttpPost("complaint")]
         [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> RaiseComplaint([FromBody] RaiseComplaintDto request)
         {
             var mappedRequest = _mapper.Map<HandleRaiseComplaint.Command>(request);
@@ -77,7 +83,6 @@ namespace access_control.api.Controllers
         }
 
         [HttpGet("view-complaint")]
-        [ProducesResponseType(typeof(string), 200)]
         public async Task<IActionResult> ViewComplaint([FromQuery] DateTime start, [FromQuery] DateTime end, int pageSize = 20, int pageNumber = 1)
         {
             var response = await Mediator.Send(new HandleViewComplaint.Query 
@@ -91,7 +96,6 @@ namespace access_control.api.Controllers
         }
 
         [HttpGet("allocated")]
-        [ProducesResponseType(typeof(string), 200)]
         public async Task<IActionResult> FetchAllocatedLocks()
         {
             var response = await Mediator.Send(new HandleFetchAllocatedLocks.Query
@@ -102,7 +106,6 @@ namespace access_control.api.Controllers
         }
 
         [HttpGet("assigned")]
-        [ProducesResponseType(typeof(string), 200)]
         public async Task<IActionResult> FetchAssignedLocks()
         {
             var response = await Mediator.Send(new HandleFetchAssignedLocks.Query
