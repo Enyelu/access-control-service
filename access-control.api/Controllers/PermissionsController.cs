@@ -1,6 +1,7 @@
 ﻿using access_control.core.Commands.Permission;
 using access_control.core.DataTransferObjects;
 using access_control.core.Queries.Permission;
+using access_control.core.Shared;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,6 +18,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> CreatePermission([FromBody] HandleCreatePermission.Command request)
         {
             var response = await Mediator.Send(request);
@@ -24,6 +26,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpDelete]
+        [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> DeletePermission([FromBody] DeletePermissionDto request)
         {
             var mappedRequest = _mapper.Map<HandleDeletePermission.Command>(request);
