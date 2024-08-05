@@ -7,6 +7,7 @@ namespace access_control.infrastructure
     {
         public DbSet<Lock> Locks {  get; set; }
         public DbSet<EventLog> EventLogs { get; set; }
+        public DbSet<Complaint> Complaints { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
 

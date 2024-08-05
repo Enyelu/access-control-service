@@ -46,7 +46,8 @@ namespace access_control.core.Queries.Lock
                 if(!locks.Any())
                     return GenericResponse<List<Result>>.Fail("No locks allocated yet...");
 
-                var mappedLocks = _mapper.Map<List<Result>>(locks);
+                var orderedLocks = locks.OrderByDescending(x => x.CreatedAt);
+                var mappedLocks = _mapper.Map<List<Result>>(orderedLocks);
                 _logger.LogError($"Retrieved allocated locks for {request.TenantId} successfully at {DateTime.Now}");
                 return GenericResponse<List<Result>>.Success(mappedLocks, "Locks retrieved successfully.");
             }

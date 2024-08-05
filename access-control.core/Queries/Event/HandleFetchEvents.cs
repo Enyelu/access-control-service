@@ -64,7 +64,7 @@ namespace access_control.core.Queries.Event
                 if(request.EventType != EventEnum.Generic)
                     eventsquery = eventsquery.Where(x => x.Action == request.EventType.ToString());
                 
-                var events = await eventsquery.ToListAsync();
+                var events = await eventsquery.OrderByDescending(x => x.CreatedAt).ToListAsync();
 
                 if (!events.Any())
                     GenericResponse<string>.Fail($"No event(s) found between {request.Start} and {request.End}");

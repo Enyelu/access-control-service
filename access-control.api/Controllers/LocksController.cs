@@ -1,6 +1,7 @@
 ﻿using access_control.core.Commands.Lock;
 using access_control.core.DataTransferObjects;
 using access_control.core.Queries.Lock;
+using access_control.domain.Enums;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -68,17 +69,24 @@ namespace access_control.api.Controllers
 
         [HttpPost("complaint")]
         [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> RaiseComplaint([FromBody] string request)
+        public async Task<IActionResult> RaiseComplaint([FromBody] RaiseComplaintDto request)
         {
-            var response = await Mediator.Send(request);
+            var mappedRequest = _mapper.Map<HandleRaiseComplaint.Command>(request);
+            var response = await Mediator.Send(mappedRequest);
             return Ok(response);
         }
 
         [HttpGet("view-complaint")]
         [ProducesResponseType(typeof(string), 200)]
-        public async Task<IActionResult> ViewComplaint(string request)
+        public async Task<IActionResult> ViewComplaint([FromQuery] DateTime start, [FromQuery] DateTime end, int pageSize = 20, int pageNumber = 1)
         {
-            var response = await Mediator.Send(request);
+            var response = await Mediator.Send(new HandleViewComplaint.Query 
+            { 
+                Start = start, 
+                End = end, 
+                PageNumber = pageNumber, 
+                PageSize = pageSize
+            });
             return Ok(response);
         }
 
