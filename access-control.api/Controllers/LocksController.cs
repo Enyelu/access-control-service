@@ -1,6 +1,5 @@
 ﻿using access_control.core.Commands.Lock;
 using access_control.core.DataTransferObjects;
-using access_control.core.Queries.Event;
 using access_control.core.Queries.Lock;
 using access_control.core.Shared;
 using AutoMapper;
@@ -52,28 +51,26 @@ namespace access_control.api.Controllers
             var response = await Mediator.Send(new HandleOpenLock.Command
             {
                 LockId = lockId,
-                RoleId = GetRequiredValues().roleId,
+                RoleIds = GetRequiredValues().roleIds,
                 TenantId = GetRequiredValues().tenantId
             });
             return Ok(response);
         }
 
         [HttpPost("close")]
-        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> CloseLock([FromHeader]Guid lockId)
         {
             var response = await Mediator.Send(new HandleCloseLock.Command
             {
                 LockId = lockId,
-                RoleId = GetRequiredValues().roleId,
+                RoleIds = GetRequiredValues().roleIds,
                 TenantId = GetRequiredValues().tenantId
             });
             return Ok(response);
         }
 
         [HttpPost("complaint")]
-        [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> RaiseComplaint([FromBody] RaiseComplaintDto request)
         {
@@ -110,7 +107,7 @@ namespace access_control.api.Controllers
         {
             var response = await Mediator.Send(new HandleFetchAssignedLocks.Query
             {
-                RoleId = GetRequiredValues().roleId,
+                RoleIds = GetRequiredValues().roleIds,
                 TenantId = GetRequiredValues().tenantId
             });
             return Ok(response);

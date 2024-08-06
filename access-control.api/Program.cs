@@ -17,16 +17,34 @@ builder.Services.ConfigureApplicationServices(builder.Configuration);
 builder.Services.ConfigureApplicationDatabase(builder.Configuration);
 builder.Services.AddApplicationCore();
 
-//Configure logger
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
+builder.Services.ConfigureAuthentication(builder.Configuration);
+builder.Services.AddAuthorization();
+
+// Configure logger
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)
     .ReadFrom.Services(services)
     .WriteTo.Seq(context.Configuration["Serilog:WriteTo:0:Args:serverUrl"]));
 
+
 var app = builder.Build();
 Log.Information("Application is starting - Access control");
 
 // Configure the HTTP request pipeline.
+
+app.UseCors("AllowAll");
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -42,7 +60,6 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationContext>();
         context.Database.Migrate();
-
     }
     catch (Exception ex)
     {
@@ -50,12 +67,15 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine(ex.Message);
     }
 }
+
 app.UseHttpsRedirection();
-
+app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseMiddleware<AuditMiddleware>();
-
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();

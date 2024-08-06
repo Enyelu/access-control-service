@@ -12,7 +12,7 @@ namespace access_control.core.Commands.Lock
         public class Command : IRequest<GenericResponse<string>>
         {
             public string TenantId { get; set; }
-            public string RoleId { get; set; }
+            public List<string> RoleIds { get; set; }
             public Guid LockId { get; set; }
         }
         public class Handler : IRequestHandler<Command, GenericResponse<string>>
@@ -40,7 +40,7 @@ namespace access_control.core.Commands.Lock
                 var permission = await _dbContext.Permissions.FirstOrDefaultAsync(x =>
                 x.LockId == lockId &&
                 x.TenantId == request.TenantId &&
-                x.RoleId == request.RoleId, cancellationToken);
+                request.RoleIds.Contains(x.RoleId), cancellationToken);
 
                 if (permission == null)
                     return GenericResponse<string>.Fail("Permission denied", 401);

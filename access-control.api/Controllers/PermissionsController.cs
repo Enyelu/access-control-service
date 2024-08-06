@@ -3,6 +3,7 @@ using access_control.core.DataTransferObjects;
 using access_control.core.Queries.Permission;
 using access_control.core.Shared;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace access_control.api.Controllers
@@ -18,6 +19,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> CreatePermission([FromBody] HandleCreatePermission.Command request)
         {

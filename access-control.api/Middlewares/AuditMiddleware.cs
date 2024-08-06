@@ -2,6 +2,7 @@
 using access_control.infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Security.Claims;
 using System.Text;
 
 namespace access_control.api.Middlewares
@@ -26,8 +27,8 @@ namespace access_control.api.Middlewares
                 var endpoint = context.GetEndpoint();
                 var routeEndpoint = endpoint as RouteEndpoint;
                 var actionName = routeEndpoint?.RoutePattern.RequiredValues["action"]?.ToString();
-                var userId = context.User?.Identity?.Name ?? "Anonymous";
-                var tenantId = context.User?.FindFirst("TenantId")?.ToString() ?? "Anonymous";
+                var userId = context.User?.Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value?.ToString();
+                var tenantId = context?.User?.Claims.FirstOrDefault(x => x.Type == "TenantId")?.Value?.ToString();
 
                 try
                 {
