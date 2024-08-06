@@ -18,7 +18,7 @@ namespace access_control.core.Queries.Event
             public DateTime End { get; set; }
             public int PageSize { get; set; }
             public int PageNumber { get; set; }
-            public Guid TenantId { get; set; }
+            public string TenantId { get; set; }
         }
 
         public class Result
@@ -54,10 +54,8 @@ namespace access_control.core.Queries.Event
                 if (request.Start <= DateTime.MinValue)
                     request.Start = request.End.AddMonths(-6);
 
-                var tenantId = request.TenantId.ToString();
-
                 var eventsquery = _dbContext.EventLogs.Where(x =>
-                x.TenantId == tenantId &&
+                x.TenantId == request.TenantId &&
                 x.CreatedAt >= request.Start &&
                 x.CreatedAt <= request.End);
 

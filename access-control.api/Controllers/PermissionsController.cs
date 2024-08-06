@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace access_control.api.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "TenantSuperAdmin,TenantAdmin")]
     [ApiController]
     public class PermissionsController : ApiBaseController
     {
@@ -19,7 +20,6 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "SuperAdmin,Admin")]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> CreatePermission([FromBody] HandleCreatePermission.Command request)
         {
