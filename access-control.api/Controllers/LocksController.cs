@@ -3,6 +3,7 @@ using access_control.core.DataTransferObjects;
 using access_control.core.Queries.Lock;
 using access_control.core.Shared;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace access_control.api.Controllers
@@ -18,6 +19,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> CreateLock([FromBody]CreateLockDto request)
         {
@@ -32,6 +34,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpPatch("allocate-lock")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> AllocateLock([FromHeader] Guid lockId)
         {
@@ -45,6 +48,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost("open")]
+        [Authorize]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> OpenLock([FromHeader]Guid lockId)
         {
@@ -58,6 +62,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost("close")]
+        [Authorize]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> CloseLock([FromHeader]Guid lockId)
         {
@@ -71,15 +76,18 @@ namespace access_control.api.Controllers
         }
 
         [HttpPost("complaint")]
+        [Authorize]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
         public async Task<IActionResult> RaiseComplaint([FromBody] RaiseComplaintDto request)
         {
             var mappedRequest = _mapper.Map<HandleRaiseComplaint.Command>(request);
+            mappedRequest.UserId = GetRequiredValues().userId;
             var response = await Mediator.Send(mappedRequest);
             return Ok(response);
         }
 
         [HttpGet("view-complaint")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> ViewComplaint([FromQuery] DateTime start, [FromQuery] DateTime end, int pageSize = 20, int pageNumber = 1)
         {
             var response = await Mediator.Send(new HandleViewComplaint.Query 
@@ -93,16 +101,22 @@ namespace access_control.api.Controllers
         }
 
         [HttpGet("allocated")]
-        public async Task<IActionResult> FetchAllocatedLocks()
+        [Authorize(Roles = "TenantSuperAdmin,TenantAdmin,SuperAdmin,Admin")]
+        public async Task<IActionResult> FetchAllocatedLocks(string tenantId)
         {
+            if(!string.IsNullOrWhiteSpace(tenantId) && User.IsInRole("TenantSuperAdmin") || User.IsInRole("TenantAdmin"))
+                return Unauthorized();
+
+            var actualTenantId = string.IsNullOrWhiteSpace(tenantId) ? GetRequiredValues().tenantId : tenantId;
             var response = await Mediator.Send(new HandleFetchAllocatedLocks.Query
             {
-                TenantId = GetRequiredValues().tenantId
+                TenantId = actualTenantId
             });
             return Ok(response);
         }
 
         [HttpGet("assigned")]
+        [Authorize(Roles = "TenantSuperAdmin,TenantAdmin")]
         public async Task<IActionResult> FetchAssignedLocks()
         {
             var response = await Mediator.Send(new HandleFetchAssignedLocks.Query
