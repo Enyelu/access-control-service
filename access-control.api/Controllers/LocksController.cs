@@ -1,6 +1,5 @@
 ﻿using access_control.core.Commands.Lock;
 using access_control.core.DataTransferObjects;
-using access_control.core.Queries.Event;
 using access_control.core.Queries.Lock;
 using access_control.core.Shared;
 using AutoMapper;
@@ -52,7 +51,7 @@ namespace access_control.api.Controllers
             var response = await Mediator.Send(new HandleOpenLock.Command
             {
                 LockId = lockId,
-                RoleId = GetRequiredValues().roleId,
+                RoleIds = GetRequiredValues().roleIds,
                 TenantId = GetRequiredValues().tenantId
             });
             return Ok(response);
@@ -65,7 +64,7 @@ namespace access_control.api.Controllers
             var response = await Mediator.Send(new HandleCloseLock.Command
             {
                 LockId = lockId,
-                RoleId = GetRequiredValues().roleId,
+                RoleIds = GetRequiredValues().roleIds,
                 TenantId = GetRequiredValues().tenantId
             });
             return Ok(response);
@@ -108,7 +107,7 @@ namespace access_control.api.Controllers
         {
             var response = await Mediator.Send(new HandleFetchAssignedLocks.Query
             {
-                RoleId = GetRequiredValues().roleId,
+                RoleIds = GetRequiredValues().roleIds,
                 TenantId = GetRequiredValues().tenantId
             });
             return Ok(response);

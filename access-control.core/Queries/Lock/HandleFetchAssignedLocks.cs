@@ -4,6 +4,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace access_control.core.Queries.Lock
 {
@@ -11,7 +12,7 @@ namespace access_control.core.Queries.Lock
     {
         public class Query : IRequest<GenericResponse<List<Result>>>
         {
-            public string RoleId { get; set; }
+            public List<string> RoleIds { get; set; }
             public string TenantId { get; set; }
         }
 
@@ -36,7 +37,7 @@ namespace access_control.core.Queries.Lock
             public async Task<GenericResponse<List<Result>>> Handle(Query request, CancellationToken cancellationToken)
             {
                 var locks = await (from p in _dbContext.Permissions
-                                   .Where(e => e.TenantId == request.TenantId && e.RoleId == request.RoleId)
+                                   .Where(e => e.TenantId == request.TenantId && request.RoleIds.Contains(e.RoleId))
                                    join l in _dbContext.Locks on p.LockId equals l.Id
                                    select new Result
                                    {
@@ -47,7 +48,7 @@ namespace access_control.core.Queries.Lock
                 if (!locks.Any())
                     return GenericResponse<List<Result>>.Fail("No locks assigned yet...");
                
-                _logger.LogError($"Retrieved assigned locks for {request.RoleId} successfully at {DateTime.Now}");
+                _logger.LogError($"Retrieved assigned locks for {JsonConvert.SerializeObject(request.RoleIds)} successfully at {DateTime.Now}");
                 return GenericResponse<List<Result>>.Success(locks, "Locks retrieved successfully.");
             }
         }
