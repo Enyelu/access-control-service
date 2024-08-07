@@ -32,6 +32,8 @@ namespace access_control.api.Controllers
         public async Task<IActionResult> DeletePermission([FromBody] DeletePermissionDto request)
         {
             var mappedRequest = _mapper.Map<HandleDeletePermission.Command>(request);
+            mappedRequest.TenantId = GetRequiredValues().tenantId;
+            mappedRequest.UserId = GetRequiredValues().userId;
             var response = await Mediator.Send(mappedRequest);
             return Ok(response);
         }
