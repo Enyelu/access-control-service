@@ -18,7 +18,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "TenantSuperAdmin,TenantAdmin,SuperAdmin,Admin]")]
+        [Authorize(Roles = "TenantSuperAdmin,TenantAdmin,SuperAdmin,Admin")]
         [ProducesResponseType(typeof(GenericResponse<PaginationResult<HandleFetchEvents.Result>>), 200)]
         public async Task<IActionResult> FetchEvents([FromHeader]Guid tenantId, [FromQuery]DateTime start, [FromQuery]DateTime end, 
             [FromQuery]EventEnum eventType = EventEnum.Generic, int pageSize = 20, int pageNumber = 1)
