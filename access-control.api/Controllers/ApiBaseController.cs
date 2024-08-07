@@ -11,7 +11,7 @@ namespace access_control.api.Controllers
         private IMediator _mediator;
         protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
 
-        protected (string userId, string tenantId, string staffId, List<string> roleIds) GetRequiredValues()
+        protected (string userId, string tenantId, string staffId, List<string> roleIds) GetRequiredValues(bool isRequired = false)
         {
             var staffId = User?.Claims?.FirstOrDefault(x => x.Type == "StaffId")?.Value.ToString();
             var tenantId = User?.Claims.FirstOrDefault(x => x.Type == "TenantId")?.Value?.ToString();
@@ -25,7 +25,7 @@ namespace access_control.api.Controllers
                 roleIds.Add(item.Value?.Split(":")?[1]?.ToString());
             }
 
-            if (string.IsNullOrWhiteSpace(tenantId) || string.IsNullOrWhiteSpace(userId) || roleDefinitions == null || !roleDefinitions.Any())
+            if ((string.IsNullOrWhiteSpace(tenantId) || string.IsNullOrWhiteSpace(userId) || roleDefinitions == null || !roleDefinitions.Any()) && isRequired)
                 throw new Exception("Unauthorized");
             return (userId, tenantId, staffId, roleIds);
         }

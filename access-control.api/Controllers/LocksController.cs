@@ -102,7 +102,7 @@ namespace access_control.api.Controllers
 
         [HttpGet("allocated")]
         [Authorize(Roles = "TenantSuperAdmin,TenantAdmin,SuperAdmin,Admin")]
-        public async Task<IActionResult> FetchAllocatedLocks(string tenantId)
+        public async Task<IActionResult> FetchAllocatedLocks(string? tenantId)
         {
             if(!string.IsNullOrWhiteSpace(tenantId) && User.IsInRole("TenantSuperAdmin") || User.IsInRole("TenantAdmin"))
                 return Unauthorized();
@@ -116,7 +116,7 @@ namespace access_control.api.Controllers
         }
 
         [HttpGet("assigned")]
-        [Authorize(Roles = "TenantSuperAdmin,TenantAdmin")]
+        [Authorize]
         public async Task<IActionResult> FetchAssignedLocks()
         {
             var response = await Mediator.Send(new HandleFetchAssignedLocks.Query
