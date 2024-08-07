@@ -54,6 +54,7 @@ namespace access_control.core.Commands.Lock
 
                 //If lock openned successfully then
                 lockToOpen.IsOpen = true;
+                lockToOpen.OpenedAt = DateTime.UtcNow;
                 _dbContext.Update(lockToOpen);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 

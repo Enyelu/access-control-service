@@ -30,11 +30,11 @@ namespace access_control.core.Commands.Lock
             }
             public async Task<GenericResponse<string>> Handle(Command request, CancellationToken cancellationToken)
             {
-                _logger.LogError($"Attempting to open lock {request.LockId}");
+                _logger.LogError($"Attempting to close lock {request.LockId}");
                 string lockId = request.LockId.ToString();
 
-                var lockToOpen = await _dbContext.Locks.Where(x => x.Id == lockId).FirstOrDefaultAsync(cancellationToken);
-                if (lockToOpen == null)
+                var lockToClose = await _dbContext.Locks.Where(x => x.Id == lockId).FirstOrDefaultAsync(cancellationToken);
+                if (lockToClose == null)
                     return GenericResponse<string>.Fail("Lock not found");
 
                 var permission = await _dbContext.Permissions.FirstOrDefaultAsync(x =>
@@ -53,8 +53,9 @@ namespace access_control.core.Commands.Lock
                     return GenericResponse<string>.Fail("Something happened, please try again!", 401);
 
                 //If lock closed successfully then
-                lockToOpen.IsOpen = false;
-                _dbContext.Update(lockToOpen);
+                lockToClose.IsOpen = false;
+                lockToClose.OpenedAt = null;
+                _dbContext.Update(lockToClose);
                 await _dbContext.SaveChangesAsync(cancellationToken);
 
                 return GenericResponse<string>.Success("Success", "Lock closed successfully!");
