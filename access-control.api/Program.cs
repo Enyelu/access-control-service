@@ -36,6 +36,8 @@ builder.Services.AddCors(options =>
 builder.Services.ConfigureAuthentication(builder.Configuration);
 builder.Services.AddAuthorization();
 
+builder.Services.InjectFluentValidations();
+
 // Configure logger
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)

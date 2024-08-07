@@ -12,9 +12,9 @@ namespace access_control.core.Commands.Permission
         public class Command : IRequest<GenericResponse<string>>
         {
             public Guid Id { get; set; }
-            public Guid UserId { get; set; }
+            public string UserId { get; set; }
             public Guid LockId { get; set; }
-            public Guid TenantId { get; set; }
+            public string TenantId { get; set; }
         }
         public class Handler : IRequestHandler<Command, GenericResponse<string>>
         {
@@ -36,7 +36,7 @@ namespace access_control.core.Commands.Permission
                 var permission = await _dbContext.Permissions.FirstOrDefaultAsync(x => 
                 x.Id == request.Id.ToString() && 
                 x.LockId == request.LockId.ToString() &&
-                x.TenantId == request.TenantId.ToString(), cancellationToken);
+                x.TenantId == request.TenantId, cancellationToken);
 
                 if (permission == null)
                     return GenericResponse<string>.Fail("Permission does not exist", 404);

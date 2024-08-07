@@ -4,6 +4,5 @@
     {
         public Guid Id { get; set; }
         public Guid LockId { get; set; }
-        public Guid TenantId { get; set; }
     }
 }
