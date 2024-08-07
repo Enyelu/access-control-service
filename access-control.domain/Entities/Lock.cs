@@ -6,5 +6,6 @@
         public bool IsOpen { get; set; }
         public string? TenantId { get; set; }
         public string SerialNumber { get; set; }
+        public DateTime? OpenedAt { get; set; }
     }
 }
