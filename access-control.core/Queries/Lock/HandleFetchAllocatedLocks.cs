@@ -40,9 +40,12 @@ namespace access_control.core.Queries.Lock
             {
                 _logger.LogError($"Attempting to retrieve allocated locks for {request.TenantId} at {DateTime.Now}");
 
-                var locks = await _dbContext.Locks.Where(x => x.TenantId == request.TenantId)
-                    .ToListAsync(cancellationToken);
+                var locksQueriable = _dbContext.Locks.AsQueryable();
 
+                if (!string.IsNullOrWhiteSpace(request.TenantId))
+                    locksQueriable.Where(x => x.TenantId == request.TenantId);
+
+                var locks = await locksQueriable.ToListAsync(cancellationToken);
                 if(!locks.Any())
                     return GenericResponse<List<Result>>.Fail("No locks allocated yet...");
 
