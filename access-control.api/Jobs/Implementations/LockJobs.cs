@@ -16,8 +16,15 @@ namespace access_control.api.Jobs.Implementations
         public async Task<string> CheckAndCloseOpenDoors()
         {
             _logger.LogInformation($"Starting automatic locks closure at {DateTime.UtcNow} UTC time");
-            var locksToClose = _context.Locks.Where(x => x.OpenedAt != null && (DateTime.UtcNow - x.OpenedAt).Value.Minutes > 5).ToList();
-            _logger.LogInformation($"Found {locksToClose.Count} openned locks at {DateTime.UtcNow} UTC time");
+            
+            var now = DateTime.UtcNow;
+            var locksToClose = _context.Locks
+                .Where(x => x.OpenedAt.HasValue)
+                .AsEnumerable()
+                .Where(x => (now - x.OpenedAt.Value).TotalMinutes > 5)
+                .ToList();
+
+            _logger.LogInformation($"Found {locksToClose.Count} openned lock(s) at {DateTime.UtcNow} UTC time");
 
             if (!locksToClose.Any())
                 return "No doors/locks to close";

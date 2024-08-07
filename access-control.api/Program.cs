@@ -1,9 +1,13 @@
 using access_control.api.Extensions;
+using access_control.api.Jobs.Interfaces;
 using access_control.api.Middlewares;
 using access_control.core;
 using access_control.infrastructure;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +20,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.ConfigureApplicationServices(builder.Configuration);
 builder.Services.ConfigureApplicationDatabase(builder.Configuration);
 builder.Services.AddApplicationCore();
+builder.Services.ConfigureHangfireSettings(builder.Configuration);
 
 builder.Services.AddCors(options =>
 {
@@ -44,6 +49,11 @@ Log.Information("Application is starting - Access control");
 // Configure the HTTP request pipeline.
 
 app.UseCors("AllowAll");
+
+app.UseHangfireDashboard("/hangfire");
+app.UseHangfireServer();
+// Schedule recurring job
+RecurringJob.AddOrUpdate<ILockJobs>(job => job.CheckAndCloseOpenDoors(), Cron.MinuteInterval(5));
 
 if (app.Environment.IsDevelopment())
 {
