@@ -43,7 +43,7 @@ namespace access_control.core.Queries.Lock
                 var locksQueriable = _dbContext.Locks.AsQueryable();
 
                 if (!string.IsNullOrWhiteSpace(request.TenantId))
-                    locksQueriable.Where(x => x.TenantId == request.TenantId);
+                    locksQueriable = locksQueriable.Where(x => x.TenantId == request.TenantId);
 
                 var locks = await locksQueriable.ToListAsync(cancellationToken);
                 if(!locks.Any())

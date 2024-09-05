@@ -36,13 +36,13 @@ namespace access_control.api.Controllers
         [HttpPatch("allocate-lock")]
         [Authorize(Roles = "SuperAdmin,Admin")]
         [ProducesResponseType(typeof(GenericResponse<string>), 200)]
-        public async Task<IActionResult> AllocateLock([FromHeader] Guid lockId)
+        public async Task<IActionResult> AllocateLock([FromHeader] Guid lockId, [FromHeader] string tenantId)
         {
             var response = await Mediator.Send(new HandleAllocateLock.Command
             {
                 LockId = lockId,
                 UserId = GetRequiredValues().userId,
-                TenantId = GetRequiredValues().tenantId
+                TenantId = tenantId
             });
             return Ok(response);
         }
